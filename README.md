@@ -32,7 +32,7 @@ You need to add fetch's middleware to your Ring server. Additionally, you can se
 ```
 Or alternatively, if you want to specify which headers should be set upstream
 
-```
+```clojure
 (defn wrap-base [handler]
   (-> handler
       wrap-defaults
@@ -45,7 +45,7 @@ Or alternatively, if you want to specify which headers should be set upstream
 
 Dummy functions have been defined in the fetch.core ns that will be re-bound when you make the call. So:
 
-```
+```clojure
 (ns foo.handler
 (:require [fetch.core :as f]))
 

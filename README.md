@@ -58,7 +58,57 @@ Dummy functions have been defined in the fetch.core ns that will be re-bound whe
 
 ### When you can't make fetch happen
 
-FIXME
+In the case of a failure, fetch will throw an `ex-info`, with e.g.:
+
+```clojure
+{:type   ::fetch.core/fetch
+ :url    "http://example.com"
+ :status 404
+ :error  nil}
+```
+The `:error` key refers to the http-kit error (an exception object). Typically, you expect to either get a non successful `:status` code, or an error.
+
+If you are using e.g. plain Compojure, you probably have middleware already for dealing with these exceptions. In that case, you should extend that to catch clojure.lang.ExceptionInfo, or use a library such as [catch-data](https://github.com/gfredericks/catch-data).
+
+If you're using Compojure API, you can add the exception handler directly into your `:exceptions` map, like so:
+
+```clojure
+(ns consumer-marketplace.routes
+  (:require [compojure.api.exception :as ex]
+            [compojure.api.sweet :refer :all]
+            [fetch.core :as f]))
+
+(defn exception-response [status message]
+  {:status status
+   :body {:message message
+          :type :fetch}
+   :headers {}})
+
+(defn fetch-exception-handler []
+  (fn [^Exception e {:keys [status url error] :as data} request]
+    (timbre/error e)
+    (timbre/error error)
+    (case status
+      ;; put your custom errors here
+      404 (exception-response status "Not found")
+      422 (exception-response status (.getMessage e))
+      nil (exception-response 500 "Server internal error")
+      (exception-response 403 "Forbidden"))))
+
+;; your routes
+(defapi routes
+ :exceptions
+ {:handlers
+   {::ex/default (exception-response 500 "We didn't anticipate this!")
+    ::f/fetch    (fetch-exception-handler)}}
+
+ (context "/api" []
+   :tags ["api"]
+   (GET "/" []
+    :return {:result String}
+    (ok {:result "hello, world"}))))
+```
+
 
 ## TODO
 As always, there are improvements to be made.

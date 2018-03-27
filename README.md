@@ -1,4 +1,5 @@
 # geeny/fetch
+[![Clojars Project](https://img.shields.io/clojars/v/geeny/fetch.svg)](https://clojars.org/geeny/fetch)
 
 A Clojure library for making HTTP requests in your ring handler.
 

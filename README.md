@@ -48,7 +48,7 @@ Dummy functions have been defined in the fetch.core ns that will be re-bound whe
 
 ```clojure
 (ns foo.handler
-(:require [fetch.core :as f]))
+  (:require [fetch.core :as f]))
 
 (defn- get-upstream-data
   (f/get-sync "https://labs.geeny.io/api/applications"))
@@ -98,16 +98,16 @@ If you're using Compojure API, you can add the exception handler directly into y
 
 ;; your routes
 (defapi routes
- :exceptions
- {:handlers
-   {::ex/default (exception-response 500 "We didn't anticipate this!")
-    ::f/fetch    (fetch-exception-handler)}}
+  :exceptions
+  {:handlers
+    {::ex/default (exception-response 500 "We didn't anticipate this!")
+     ::f/fetch    (fetch-exception-handler)}}
 
- (context "/api" []
-   :tags ["api"]
-   (GET "/" []
-    :return {:result String}
-    (ok {:result "hello, world"}))))
+  (context "/api" []
+    :tags ["api"]
+    (GET "/" []
+      :return {:result String}
+      (ok {:result "hello, world"}))))
 ```
 
 
